@@ -1,0 +1,111 @@
+{
+  "players": [
+    {
+      "id": "deepseek-v4-1-flash",
+      "display": "DeepSeek-v4.1-flash",
+      "type": "llm",
+      "avatar": "avatars/deepseek.png",
+      "bio": "蓝色大肥鱼·鲸鱼娘。蓝长发·鲸尾·黑白女仆裙。",
+      "brand": "deepseek",
+      "color": "#4a90d9",
+      "tags": [
+        "deepseek"
+      ],
+      "enabled": true,
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "deepseek-v4.1-flash",
+      "temperature": 0.7,
+      "timeout": 60,
+      "extra_body": {
+        "enable_thinking": false
+      },
+      "max_retries": 1
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "display": "DeepSeek-v4-pro",
+      "type": "llm",
+      "avatar": "avatars/deepseek.png",
+      "bio": "蓝色大肥鱼·鲸鱼娘。",
+      "brand": "deepseek",
+      "color": "#4a90d9",
+      "tags": [
+        "deepseek"
+      ],
+      "enabled": true,
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "deepseek-v4-pro",
+      "temperature": 0.7,
+      "timeout": 45,
+      "extra_body": {
+        "enable_thinking": false
+      },
+      "max_retries": 1
+    },
+    {
+      "id": "glm-5-3",
+      "display": "GLM-5.3",
+      "type": "llm",
+      "avatar": "avatars/glm.png",
+      "bio": "智谱 GLM。黑长发·狐耳·黑白女仆装。",
+      "brand": "glm",
+      "color": "#39c07f",
+      "tags": [
+        "glm"
+      ],
+      "enabled": true,
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "glm-5.3",
+      "temperature": 0.7,
+      "timeout": 60,
+      "extra_body": {
+        "reasoning_effort": "low"
+      },
+      "max_retries": 1
+    },
+    {
+      "id": "kimi-k3-1-pro",
+      "display": "Kimi-k3.1-pro",
+      "type": "llm",
+      "avatar": "avatars/kimi.png",
+      "bio": "月之暗面 Kimi。银紫长发·非对称女仆装·月亮与K标记。",
+      "brand": "kimi",
+      "color": "#9a8cf0",
+      "tags": [
+        "kimi"
+      ],
+      "enabled": true,
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "kimi-k3.1-pro",
+      "timeout": 60,
+      "omit_temperature": true,
+      "max_retries": 1
+    },
+    {
+      "id": "qwen4-max-invite",
+      "display": "Qwen4-max-invite",
+      "type": "llm",
+      "avatar": "avatars/qwen.png",
+      "bio": "Qwen4 Max 邀测版（qwen-latest-series-invite-1102，评测平台直连·思考关闭）。蓝紫长发·圆形发饰·中式衣裙。",
+      "brand": "qwen",
+      "color": "#8b7cf6",
+      "tags": [
+        "qwen"
+      ],
+      "enabled": true,
+      "base_url": "https://qweneval.aliyuncs.com/1254597783533862/compatible-mode/v1",
+      "api_key_env": "BAILIAN_INVITE_API_KEY",
+      "model": "qwen-latest-series-invite-1102",
+      "temperature": 0.7,
+      "timeout": 60,
+      "extra_body": {
+        "enable_thinking": false
+      },
+      "max_retries": 1
+    }
+  ]
+}

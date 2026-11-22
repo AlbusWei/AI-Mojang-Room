@@ -1,0 +1,55 @@
+{
+  "game_mode": "4p-red-half",
+  "rule": "tenhou",
+  "seats": [
+    {
+      "name": "Qwen4-max-invite",
+      "type": "llm",
+      "base_url": "https://qweneval.aliyuncs.com/1254597783533862/compatible-mode/v1",
+      "api_key_env": "BAILIAN_INVITE_API_KEY",
+      "model": "qwen-latest-series-invite-1102",
+      "extra_body": {
+        "enable_thinking": false
+      },
+      "temperature": 0.7,
+      "timeout": 60,
+      "max_retries": 1
+    },
+    {
+      "name": "DeepSeek-v4.1-flash",
+      "type": "llm",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "deepseek-v4.1-flash",
+      "extra_body": {
+        "enable_thinking": false
+      },
+      "temperature": 0.7,
+      "timeout": 60,
+      "max_retries": 1
+    },
+    {
+      "name": "GLM-5.3",
+      "type": "llm",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "glm-5.3",
+      "extra_body": {
+        "reasoning_effort": "low"
+      },
+      "temperature": 0.7,
+      "timeout": 150,
+      "max_retries": 1
+    },
+    {
+      "name": "Kimi-k3.1-pro",
+      "type": "llm",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "model": "kimi-k3.1-pro",
+      "omit_temperature": true,
+      "timeout": 120,
+      "max_retries": 1
+    }
+  ]
+}

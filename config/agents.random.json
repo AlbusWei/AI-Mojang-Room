@@ -1,0 +1,10 @@
+{
+  "game_mode": "4p-red-half",
+  "rule": "tenhou",
+  "seats": [
+    {"name": "Random-A", "type": "random", "seed": 1},
+    {"name": "Random-B", "type": "random", "seed": 2},
+    {"name": "Random-C", "type": "random", "seed": 3},
+    {"name": "Random-D", "type": "random", "seed": 4}
+  ]
+}

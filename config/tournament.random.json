@@ -1,0 +1,14 @@
+{
+  "name": "random_demo",
+  "seats": [
+    {"name": "Rand-A", "type": "random", "seed": 1},
+    {"name": "Rand-B", "type": "random", "seed": 2},
+    {"name": "Rand-C", "type": "random", "seed": 3},
+    {"name": "Rand-D", "type": "random", "seed": 4}
+  ],
+  "seeds": [42, 7],
+  "rotations": 4,
+  "scoring": "placement",
+  "game_mode": "4p-red-half",
+  "rule": "tenhou"
+}

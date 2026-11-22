@@ -1,0 +1,15 @@
+{
+  "name": "ai_mahjong_show",
+  "_comment": "Flagship show: 4 distinct fast models, 1 seed x 4 seat rotations (duplicate). ~1-2s/decision -> a complete 4-game tournament in ~40min. Skill gradient: Qwen-flash < Qwen-plus < DeepSeek-chat < Qwen-max. (qwen-turbo is 429-throttled on this key; qwen-flash works.) For a slow reasoning-model showcase, swap one seat to deepseek-reasoner (see tournament.real.json) but expect ~hours.",
+  "seats": [
+    {"name": "Qwen-flash", "type": "llm", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "api_key_env": "DASHSCOPE_API_KEY", "model": "qwen-flash", "temperature": 0.7, "timeout": 60, "max_retries": 1},
+    {"name": "Qwen-plus", "type": "llm", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "api_key_env": "DASHSCOPE_API_KEY", "model": "qwen-plus", "temperature": 0.7, "timeout": 60, "max_retries": 1},
+    {"name": "DeepSeek-chat", "type": "llm", "base_url": "https://api.deepseek.com/v1", "api_key_env": "DEEPSEEK_API_KEY", "model": "deepseek-chat", "temperature": 0.7, "timeout": 60, "max_retries": 1},
+    {"name": "Qwen-max", "type": "llm", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "api_key_env": "DASHSCOPE_API_KEY", "model": "qwen-max", "temperature": 0.7, "timeout": 60, "max_retries": 1}
+  ],
+  "seeds": [2026],
+  "rotations": 4,
+  "scoring": "placement",
+  "game_mode": "4p-red-half",
+  "rule": "tenhou"
+}

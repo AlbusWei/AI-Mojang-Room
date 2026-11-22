@@ -1,0 +1,11 @@
+{
+  "game_mode": "4p-red-half",
+  "rule": "tenhou",
+  "_comment": "First real-model demo: 2 different LLM families + 2 random baselines. Swap random seats for more models (any OpenAI-compatible endpoint) for an all-AI show.",
+  "seats": [
+    {"name": "Qwen-plus", "type": "llm", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "api_key_env": "DASHSCOPE_API_KEY", "model": "qwen-plus", "temperature": 0.7, "timeout": 60},
+    {"name": "DeepSeek-chat", "type": "llm", "base_url": "https://api.deepseek.com/v1", "api_key_env": "DEEPSEEK_API_KEY", "model": "deepseek-chat", "temperature": 0.7, "timeout": 60},
+    {"name": "Random-A", "type": "random", "seed": 1},
+    {"name": "Random-B", "type": "random", "seed": 2}
+  ]
+}

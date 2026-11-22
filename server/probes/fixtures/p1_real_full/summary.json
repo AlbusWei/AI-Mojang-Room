@@ -1,0 +1,30 @@
+{
+  "game_id": "game_42_1794500607",
+  "seed": 42,
+  "agents": [
+    "Qwen-plus",
+    "DeepSeek-chat",
+    "Random-A",
+    "Random-B"
+  ],
+  "scores": [
+    6800,
+    47200,
+    23000,
+    23000
+  ],
+  "ranks": [
+    4,
+    1,
+    2,
+    3
+  ],
+  "num_steps": 937,
+  "num_events": 1572,
+  "num_kyoku": 11,
+  "hora_count": 2,
+  "ryukyoku_count": 9,
+  "fallback_count": 0,
+  "total_latency_ms": 1059899.1,
+  "out_dir": "runs\\p1_real_full"
+}

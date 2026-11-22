@@ -1,0 +1,21 @@
+# AI 麻将室 · server 依赖
+# 裁判引擎（Apache-2.0，Rust core + PyO3，含 Windows wheel）
+riichienv==0.4.11
+
+# P4 解说（免费中文 TTS，facts-first 解说词 → MP3/SRT）
+edge-tts>=7.0
+
+# P4 无人值守录制（复用系统 Chrome；另需 `python -m playwright install ffmpeg`）
+playwright>=1.40
+
+# P5 后期混音（完整版 ffmpeg，把解说 MP3 按时间轴混入录制视频 → MP4；
+# Playwright 自带 ffmpeg 仅 WebM 编码不能混音，故用 imageio-ffmpeg 提供的完整二进制）
+imageio-ffmpeg>=0.5
+
+# P10 头像裁剪（scripts/build_avatars.py 把生成/二创源图裁成 512px圆形头像）
+pillow>=10.0
+
+# 说明：
+# - LLM 调用走 stdlib urllib（OpenAI 兼容 HTTP），无需 openai/httpx。
+# - viewer/回放/锦标赛/解说生成均为 stdlib，零额外依赖。
+# - 密钥在 .env（gitignore），由 scripts/setup_env.py 从本机凭证提取。

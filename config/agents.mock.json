@@ -1,0 +1,10 @@
+{
+  "game_mode": "4p-red-half",
+  "rule": "tenhou",
+  "seats": [
+    {"name": "Mock-A", "type": "mock"},
+    {"name": "Mock-B", "type": "mock"},
+    {"name": "Mock-C", "type": "mock"},
+    {"name": "Mock-D", "type": "mock"}
+  ]
+}

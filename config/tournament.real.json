@@ -1,0 +1,15 @@
+{
+  "name": "model_show",
+  "_comment": "4 distinct models via 2 API keys (DashScope + DeepSeek). Slow (real LLM calls); use for the show (P5). Verify model ids before a long run.",
+  "seats": [
+    {"name": "Qwen-plus", "type": "llm", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "api_key_env": "DASHSCOPE_API_KEY", "model": "qwen-plus", "temperature": 0.7, "timeout": 90, "max_retries": 1},
+    {"name": "Qwen-max", "type": "llm", "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1", "api_key_env": "DASHSCOPE_API_KEY", "model": "qwen-max", "temperature": 0.7, "timeout": 90, "max_retries": 1},
+    {"name": "DeepSeek-chat", "type": "llm", "base_url": "https://api.deepseek.com/v1", "api_key_env": "DEEPSEEK_API_KEY", "model": "deepseek-chat", "temperature": 0.7, "timeout": 90, "max_retries": 1},
+    {"name": "DeepSeek-reasoner", "type": "llm", "base_url": "https://api.deepseek.com/v1", "api_key_env": "DEEPSEEK_API_KEY", "model": "deepseek-reasoner", "temperature": 0.7, "timeout": 120, "max_retries": 1}
+  ],
+  "seeds": [42],
+  "rotations": 4,
+  "scoring": "placement",
+  "game_mode": "4p-red-half",
+  "rule": "tenhou"
+}

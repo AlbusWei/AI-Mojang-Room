@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 麻将室 · 上帝视角</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">🀄 AI 麻将室<span class="sub">上帝视角 · 立直麻将</span></div>
+    <select id="gameSel" title="选择对局"></select>
+    <span id="liveBadge" class="live-badge hidden"><span class="dot"></span><span id="liveText">LIVE</span></span>
+    <span id="status" class="status"></span>
+    <nav class="nav">
+      <button id="newGameBtn" class="navlink btn-new" title="发起一局新的 AI 直播对局">🎮 新开一局</button>
+      <a class="navlink" href="roster.html">👥 选手库</a>
+      <a class="navlink" href="leaderboard.html">🏆 积分榜</a>
+      <a class="navlink" href="leaderboard.html#live">📺 直播 / 对局</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="table" id="table">
+      <!-- Fixed 1500x940 design board, scaled to fit. Each seat's hand/river/melds
+           are rendered in a LOCAL upright frame then ROTATED (0/-90/180/90) like
+           Majsoul, so side/top tiles lie in that player's orientation. -->
+      <div class="board" id="board">
+        <div class="center" id="center"></div>
+        <div class="river" id="river0"></div>
+        <div class="river" id="river1"></div>
+        <div class="river" id="river2"></div>
+        <div class="river" id="river3"></div>
+        <div class="hand" id="hand0"></div>
+        <div class="hand" id="hand1"></div>
+        <div class="hand" id="hand2"></div>
+        <div class="hand" id="hand3"></div>
+        <div class="meld-tray" id="meld0"><span class="zone-label">副露</span><div class="melds"></div></div>
+        <div class="meld-tray" id="meld1"><span class="zone-label">副露</span><div class="melds"></div></div>
+        <div class="meld-tray" id="meld2"><span class="zone-label">副露</span><div class="melds"></div></div>
+        <div class="meld-tray" id="meld3"><span class="zone-label">副露</span><div class="melds"></div></div>
+        <div class="ident" id="id0"></div>
+        <div class="ident" id="id1"></div>
+        <div class="ident" id="id2"></div>
+        <div class="ident" id="id3"></div>
+        <div class="overlay" id="overlay"></div>
+      </div>
+    </section>
+    <aside class="reasoning" id="reasoning"></aside>
+  </main>
+
+  <footer class="bottombar">
+    <button id="restartBtn" title="回到开局">⏮</button>
+    <button id="prevBtn" title="上一步">◀</button>
+    <button id="playBtn" title="播放 / 暂停">▶</button>
+    <button id="nextBtn" title="下一步">▶❙</button>
+    <input id="scrub" type="range" min="0" max="0" value="0" title="进度">
+    <select id="speed" title="播放速度">
+      <option value="4000">节目 4s</option>
+      <option value="2500" selected>直播 2.5s</option>
+      <option value="1500">快 1.5s</option>
+      <option value="700">很快 0.7s</option>
+      <option value="300">极速 0.3s</option>
+      <option value="80">闪回 0.08s</option>
+    </select>
+    <span id="counter" class="counter">0 / 0</span>
+    <label class="toggle"><input type="checkbox" id="hideHands"> 暗牌</label>
+    <label class="toggle"><input type="checkbox" id="soundToggle" checked> 声音</label>
+    <label class="toggle"><input type="checkbox" id="commToggle" checked> 解说</label>
+  </footer>
+</div>
+<div id="newGameModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="新开一局">
+  <div class="modal-card">
+    <div class="modal-head">🎮 新开一局 <button id="ngClose" class="modal-x" title="关闭">✕</button></div>
+    <div class="modal-body">
+      <label class="ng-row">预设填充（可选）
+        <select id="ngConfig"><option value="">自定义逐席选人…</option></select>
+      </label>
+      <div class="ng-seat-head">每席参赛人（从选手库选择）</div>
+      <div id="ngSeats" class="ng-seats"></div>
+      <label class="ng-row">种子 <input id="ngSeed" type="number" value="20261115" min="0" step="1"></label>
+      <label class="ng-row">对局 ID（可选） <input id="ngId" type="text" placeholder="留空自动生成"></label>
+      <div id="ngError" class="ng-error hidden"></div>
+      <div class="ng-actions">
+        <button id="ngStart" class="btn-primary">▶ 开始直播对局</button>
+      </div>
+      <div class="ng-live">
+        <div class="ng-live-head">进行中的直播</div>
+        <div id="ngLiveList" class="ng-live-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="subtitle" class="subtitle"></div>
+<script src="tiles.js"></script>
+<script src="viewer.js"></script>
+</body>
+</html>

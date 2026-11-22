@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 麻将室 · 选手库</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<style>
+  .roster-wrap{max-width:1280px;margin:0 auto;padding:20px 24px 60px;}
+  .roster-head{display:flex;align-items:center;gap:12px;margin:8px 0 18px;flex-wrap:wrap;}
+  .roster-head h1{font-size:20px;color:var(--gold);margin:0;}
+  .roster-head .spacer{flex:1;}
+  #rSearch{background:#0a2b26;border:1px solid #1d4a41;color:#e8f9f4;border-radius:8px;padding:8px 12px;min-width:220px;}
+  .rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .rcard{background:linear-gradient(180deg,#0d3b33,#0a2b26);border:1px solid #1d4a41;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start;position:relative;}
+  .rcard.disabled{opacity:.45;}
+  .rcard img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);background:#0a2b26;flex:none;}
+  .rcard .rmeta{min-width:0;flex:1;}
+  .rcard .rname{font-weight:700;color:#e8f9f4;font-size:15px;word-break:break-all;}
+  .rcard .rmodel{color:#8fb8ae;font-size:12px;margin-top:2px;word-break:break-all;}
+  .rcard .rbio{color:#6f948c;font-size:11px;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .rcard .rtags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;}
+  .rcard .rtag{font-size:10px;color:#0a2b26;background:var(--gold);border-radius:4px;padding:1px 6px;}
+  .rcard .rtype{font-size:10px;color:#8fb8ae;border:1px solid #1d4a41;border-radius:4px;padding:1px 6px;}
+  .rcard .rops{position:absolute;top:8px;right:8px;display:flex;gap:6px;}
+  .rcard .rops button{background:#0a2b26;border:1px solid #1d4a41;color:#8fb8ae;border-radius:6px;cursor:pointer;font-size:12px;padding:2px 7px;}
+  .rcard .rops button:hover{color:var(--gold);border-color:var(--gold);}
+  /* drawer */
+  #rDrawer{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;justify-content:flex-end;z-index:60;}
+  #rDrawer.hidden{display:none;}
+  .rdrawer-card{width:440px;max-width:92vw;height:100%;overflow:auto;background:#0a2b26;border-left:1px solid #1d4a41;padding:20px;}
+  .rdrawer-card h2{color:var(--gold);font-size:17px;margin:0 0 14px;}
+  .rform label{display:block;color:#8fb8ae;font-size:12px;margin:10px 0 4px;}
+  .rform input,.rform select,.rform textarea{width:100%;background:#0d3b33;border:1px solid #1d4a41;color:#e8f9f4;border-radius:8px;padding:8px 10px;font-size:13px;}
+  .rform textarea{min-height:64px;resize:vertical;}
+  .rform .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .rform .chk{display:flex;align-items:center;gap:8px;margin-top:12px;color:#8fb8ae;font-size:13px;}
+  .rform .chk input{width:auto;}
+  .rdrawer-actions{display:flex;gap:10px;margin-top:18px;}
+  #rError{color:#ff8080;font-size:12px;margin-top:10px;white-space:pre-wrap;}
+  .rlink{color:var(--gold);}
+</style>
+</head>
+<body>
+<div class="app" style="display:block;height:auto;min-height:100vh;">
+  <header class="topbar">
+    <div class="brand">🀄 AI 麻将室<span class="sub">选手库 · Roster</span></div>
+    <nav class="nav">
+      <a class="navlink" href="index.html">🀄 牌桌</a>
+      <a class="navlink" href="leaderboard.html">🏆 积分榜</a>
+    </nav>
+  </header>
+  <div class="roster-wrap">
+    <div class="roster-head">
+      <h1>👥 选手库</h1>
+      <span style="color:#6f948c;font-size:12px;">角色（头像/人设）与模型绑定解耦；新建对局时逐席挑选。</span>
+      <span class="spacer"></span>
+      <input id="rSearch" placeholder="搜索 名字 / 模型 / 品牌…">
+      <button id="rNew" class="btn-primary">＋ 新建选手</button>
+    </div>
+    <div id="rGrid" class="rgrid"></div>
+  </div>
+</div>
+
+<div id="rDrawer" class="hidden">
+  <div class="rdrawer-card">
+    <h2 id="rTitle">新建选手</h2>
+    <div class="rform">
+      <label>显示名（角色名）<input id="fDisplay" placeholder="如 DeepSeek-v4-pro / 自定义角色"></label>
+      <label>ID（留空自动生成）<input id="fId" placeholder="slug"></label>
+      <div class="row2">
+        <label>类型<select id="fType"><option value="llm">llm</option><option value="random">random</option><option value="mock">mock</option></select></label>
+        <label>品牌<input id="fBrand" placeholder="deepseek / qwen / …"></label>
+      </div>
+      <label>模型 model<input id="fModel" placeholder="deepseek-v4-pro"></label>
+      <label>base_url<input id="fBase" placeholder="https://…/v1"></label>
+      <div class="row2">
+        <label>api_key_env（.env 键名）<input id="fKeyEnv" placeholder="DEEPSEEK_API_KEY"></label>
+        <label>头像路径<input id="fAvatar" placeholder="avatars/deepseek.png"></label>
+      </div>
+      <div class="row2">
+        <label>temperature<input id="fTemp" type="number" step="0.1" value="0.7"></label>
+        <label>timeout(s)<input id="fTimeout" type="number" step="1" value="60"></label>
+      </div>
+      <label>人设 bio<textarea id="fBio"></textarea></label>
+      <label>高级（JSON：extra_body / omit_temperature / max_retries）<textarea id="fAdv" placeholder='{"extra_body":{"enable_thinking":false}}'></textarea></label>
+      <label class="chk"><input id="fEnabled" type="checkbox" checked> 启用（可被选入对局）</label>
+      <div id="rError"></div>
+      <div class="rdrawer-actions">
+        <button id="rSave" class="btn-primary">保存</button>
+        <button id="rCancel" class="navlink">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let PLAYERS = [];
+let EDIT_ID = null;
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+async function load() {
+  const r = await fetch("/api/roster");
+  PLAYERS = (await r.json()).players || [];
+  render();
+}
+function render() {
+  const q = $("rSearch").value.trim().toLowerCase();
+  const list = PLAYERS.filter((p) => !q || [p.display, p.id, p.model, p.brand].join(" ").toLowerCase().includes(q));
+  $("rGrid").innerHTML = list.map((p) => `
+    <div class="rcard ${p.enabled === false ? "disabled" : ""}">
+      <img src="${esc(p.avatar || "avatars/orig_deepseek.png")}" alt="" onerror="this.style.visibility='hidden'">
+      <div class="rmeta">
+        <div class="rname">${esc(p.display || p.id)}</div>
+        <div class="rmodel">${esc(p.model || p.type)}</div>
+        <div class="rbio">${esc(p.bio || "")}</div>
+        <div class="rtags"><span class="rtype">${esc(p.type)}</span>${(p.tags || []).map((t) => `<span class="rtag">${esc(t)}</span>`).join("")}</div>
+      </div>
+      <div class="rops">
+        <button data-edit="${esc(p.id)}">编辑</button>
+        <button data-del="${esc(p.id)}">删</button>
+      </div>
+    </div>`).join("") || `<span style="color:#6f948c">无匹配选手</span>`;
+  $("rGrid").querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => openEdit(b.dataset.edit)));
+  $("rGrid").querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => del(b.dataset.del)));
+}
+function openEdit(id) {
+  EDIT_ID = id || null;
+  const p = id ? PLAYERS.find((x) => x.id === id) : null;
+  $("rTitle").textContent = p ? "编辑选手 · " + p.id : "新建选手";
+  $("fDisplay").value = p ? p.display || "" : "";
+  $("fId").value = p ? p.id : "";
+  $("fType").value = p ? p.type || "llm" : "llm";
+  $("fBrand").value = p ? p.brand || "" : "";
+  $("fModel").value = p ? p.model || "" : "";
+  $("fBase").value = p ? p.base_url || "" : "";
+  $("fKeyEnv").value = p ? p.api_key_env || "" : "";
+  $("fAvatar").value = p ? p.avatar || "" : "";
+  $("fTemp").value = p && p.temperature != null ? p.temperature : 0.7;
+  $("fTimeout").value = p && p.timeout != null ? p.timeout : 60;
+  $("fBio").value = p ? p.bio || "" : "";
+  const adv = {};
+  if (p && p.extra_body) adv.extra_body = p.extra_body;
+  if (p && p.omit_temperature) adv.omit_temperature = p.omit_temperature;
+  if (p && p.max_retries != null) adv.max_retries = p.max_retries;
+  $("fAdv").value = Object.keys(adv).length ? JSON.stringify(adv) : "";
+  $("fEnabled").checked = p ? p.enabled !== false : true;
+  $("rError").textContent = "";
+  $("rDrawer").classList.remove("hidden");
+}
+function close() { $("rDrawer").classList.add("hidden"); }
+async function save() {
+  $("rError").textContent = "";
+  let adv = {};
+  if ($("fAdv").value.trim()) { try { adv = JSON.parse($("fAdv").value); } catch (e) { $("rError").textContent = "高级 JSON 解析失败: " + e; return; } }
+  const body = {
+    display: $("fDisplay").value.trim(), type: $("fType").value, brand: $("fBrand").value.trim(),
+    model: $("fModel").value.trim(), base_url: $("fBase").value.trim(), api_key_env: $("fKeyEnv").value.trim(),
+    avatar: $("fAvatar").value.trim() || null, temperature: parseFloat($("fTemp").value), timeout: parseFloat($("fTimeout").value),
+    bio: $("fBio").value, enabled: $("fEnabled").checked,
+    tags: $("fBrand").value.trim() ? [$("fBrand").value.trim()] : [],
+    ...adv,
+  };
+  if (!body.display) { $("rError").textContent = "显示名必填"; return; }
+  if ($("fId").value.trim()) body.id = $("fId").value.trim();
+  const url = EDIT_ID ? "/api/roster/" + encodeURIComponent(EDIT_ID) : "/api/roster";
+  const method = EDIT_ID ? "PUT" : "POST";
+  const r = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const d = await r.json();
+  if (d.error) { $("rError").textContent = d.error; return; }
+  close(); load();
+}
+async function del(id) {
+  if (!confirm("删除选手 " + id + "？")) return;
+  const r = await fetch("/api/roster/" + encodeURIComponent(id), { method: "DELETE" });
+  const d = await r.json();
+  if (d.error) alert(d.error); else load();
+}
+$("rNew").addEventListener("click", () => openEdit(null));
+$("rCancel").addEventListener("click", close);
+$("rSave").addEventListener("click", save);
+$("rSearch").addEventListener("input", render);
+$("rDrawer").addEventListener("click", (e) => { if (e.target === $("rDrawer")) close(); });
+load();
+</script>
+</body>
+</html>

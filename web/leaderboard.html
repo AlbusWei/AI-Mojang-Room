@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 麻将室 · 积分榜 / 直播</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<style>
+  body { overflow: auto; }
+  .lb-app { min-height: 100vh; display: flex; flex-direction: column; }
+  .lb-main { padding: 20px 28px; display: flex; flex-direction: column; gap: 22px; max-width: 1500px; margin: 0 auto; width: 100%; }
+  .lb-section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .lb-title { font-size: 16px; font-weight: 800; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .lb-meta { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  table.lb { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.lb th { color: var(--gold); font-weight: 700; text-align: center; padding: 8px 6px; border-bottom: 1px solid var(--line-strong); font-size: 12px; }
+  table.lb td { text-align: center; padding: 8px 6px; border-bottom: 1px solid var(--line); color: var(--text); font-variant-numeric: tabular-nums; }
+  table.lb tr.first td { background: rgba(232, 193, 90, .08); }
+  table.lb td.name { font-weight: 700; }
+  table.lb td.pos { color: var(--gold); font-weight: 800; }
+  .lb-link { color: var(--gold); text-decoration: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; font-size: 12px; white-space: nowrap; }
+  .lb-link:hover { border-color: var(--line-strong); background: var(--panel-2); }
+  .lb-link.live { color: #ffd9d4; border-color: rgba(224, 85, 69, .5); background: rgba(224, 85, 69, .15); }
+  .lb-select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 13px; }
+  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: pulse 1.2s infinite; margin-right: 6px; }
+  .empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
+  .avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; border: 1px solid var(--line-strong); vertical-align: middle; }
+  .pname { display: inline-flex; align-items: center; gap: 7px; justify-content: center; }
+</style>
+</head>
+<body>
+<div class="lb-app">
+  <header class="topbar">
+    <div class="brand">🀄 AI 麻将室<span class="sub">积分榜 / 直播</span></div>
+    <nav class="nav"><a class="navlink" href="index.html">← 上帝视角回放</a></nav>
+  </header>
+  <main class="lb-main">
+    <section class="lb-section">
+      <div class="lb-title">🌐 选手总榜 <span style="font-size:11px;color:var(--muted);font-weight:400">（跨所有正式对局自动聚合 · 自动刷新）</span></div>
+      <div class="lb-meta" id="aggMeta"></div>
+      <table class="lb"><thead><tr><th>名次</th><th>选手</th><th>积分</th><th>局数</th><th>一位</th><th>胜率</th><th>平均顺位</th><th>顺位分布</th><th>平均终分</th><th>累计点差</th></tr></thead><tbody id="aggBody"></tbody></table>
+    </section>
+    <section class="lb-section">
+      <div class="lb-title">🏆 锦标赛积分榜 <select class="lb-select" id="tourneySel"></select></div>
+      <div class="lb-meta" id="tourneyMeta"></div>
+      <table class="lb"><thead><tr><th>名次</th><th>选手</th><th>积分</th><th>局数</th><th>一位</th><th>胜率</th><th>平均顺位</th><th>顺位分布</th><th>平均终分</th><th>累计点差</th><th>兜底</th></tr></thead><tbody id="lbBody"></tbody></table>
+      <div class="lb-title" style="margin-top:18px">每局明细（点击回放）</div>
+      <table class="lb"><thead><tr><th>局</th><th>牌种</th><th>轮换</th><th>座位 0→3</th><th>终分</th><th>顺位</th><th>和了</th><th>回放</th></tr></thead><tbody id="gamesDetail"></tbody></table>
+    </section>
+    <section class="lb-section" id="live">
+      <div class="lb-title">📺 直播 / 对局列表 <span style="font-size:11px;color:var(--muted);font-weight:400">（自动刷新）</span>
+        <label class="toggle" style="margin-left:auto"><input type="checkbox" id="filterTest" checked> 仅显示正式对局</label>
+      </div>
+      <div style="max-height:340px;overflow-y:auto">
+        <table class="lb"><thead><tr><th>状态</th><th>对局</th><th>选手</th><th>局数</th><th>终分</th><th>操作</th></tr></thead><tbody id="gamesBody"></tbody></table>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let tournaments = [], curTourney = null;
+let PROFILES = {};
+let BRAND_ALIASES = {};
+async function loadProfiles() {
+  try { const r = await fetch("/api/profiles"); const d = await r.json(); PROFILES = d.players || {}; BRAND_ALIASES = d.brand_aliases || {}; } catch (e) { PROFILES = {}; BRAND_ALIASES = {}; }
+}
+function profileFor(name) {
+  const n = String(name || "");
+  if (PROFILES[n]) return PROFILES[n];
+  const low = n.toLowerCase();
+  let brand = null, bestLen = 0;
+  for (const [prefix, b] of Object.entries(BRAND_ALIASES)) {
+    if (low.startsWith(prefix) && prefix.length > bestLen) { brand = b; bestLen = prefix.length; }
+  }
+  if (brand) for (const p of Object.values(PROFILES)) if (p && p.brand === brand) return p;
+  return null;
+}
+function avatarHtml(name) {
+  const p = profileFor(name);
+  const img = p && p.avatar ? `<img class="avatar" src="${esc(p.avatar)}" alt="">` : "";
+  return `<span class="pname">${img}<span>${esc(name)}</span></span>`;
+}
+async function loadStandings() {
+  const r = await fetch("/api/standings"); const d = await r.json();
+  $("aggMeta").textContent = `正式对局 ${d.num_games} 场（全 LLM 席，含最新完局）· 计分 ${d.scoring} ·  random/mock 基线不计入`;
+  $("aggBody").innerHTML = (d.standings || []).map((e, i) => {
+    const rc = (e.rank_counts || []).join(" / ");
+    const wr = Math.round((e.win_rate || 0) * 100) + "%";
+    return `<tr class="${i === 0 ? "first" : ""}"><td class="pos">${i + 1}</td><td class="name">${avatarHtml(e.name)}</td><td class="pos">${e.points}</td><td>${e.games}</td><td>${e.wins}</td><td>${wr}</td><td>${(e.avg_rank || 0).toFixed(2)}</td><td>${rc}</td><td>${e.avg_score}</td><td>${e.score_delta >= 0 ? "+" : ""}${e.score_delta}</td></tr>`;
+  }).join("") || `<tr><td colspan="10" class="empty">暂无正式对局</td></tr>`;
+}
+
+const isTest = (id) => /(^p\d_|test|mock|probe|fallback|wincap|yaku_verify|game_42|live_comm)/i.test(id);
+async function loadGames() {
+  const r = await fetch("/api/games"); const d = await r.json();
+  let games = d.games || [];
+  if ($("filterTest").checked) games = games.filter((g) => !isTest(g.id));
+  $("gamesBody").innerHTML = games.map((g) => {
+    const live = g.live;
+    const status = live === "running" ? `<span class="live-dot"></span>直播中` : (live ? "✅ 已结束" : "录播");
+    const action = live === "running"
+      ? `<a class="lb-link live" href="index.html?live=${encodeURIComponent(g.id)}">🔴 观看直播</a>`
+      : `<a class="lb-link" href="index.html?game=${encodeURIComponent(g.id)}&frame=0">回放 ▶</a>`;
+    const scores = (g.scores || []).join(" / ") || "-";
+    return `<tr><td>${status}</td><td class="name">${esc(g.id)}</td><td>${esc(g.agents)}</td><td>${g.num_kyoku != null ? g.num_kyoku : "-"}</td><td>${scores}</td><td>${action}</td></tr>`;
+  }).join("") || `<tr><td colspan="6" class="empty">暂无对局</td></tr>`;
+}
+async function loadTournaments() {
+  const r = await fetch("/api/tournaments"); const d = await r.json();
+  tournaments = d.tournaments || [];
+  const want = new URLSearchParams(location.search).get("tourney");
+  $("tourneySel").innerHTML = tournaments.map((t) => `<option value="${esc(t.id)}">${esc(t.name || t.id)}（${t.num_games} 局）</option>`).join("");
+  const id = want && tournaments.some((t) => t.id === want) ? want : (tournaments[0] && tournaments[0].id);
+  if (id) { $("tourneySel").value = id; await loadTourney(id); }
+  else { $("lbBody").innerHTML = `<tr><td colspan="11" class="empty">暂无锦标赛</td></tr>`; $("gamesDetail").innerHTML = ""; }
+}
+async function loadTourney(id) {
+  curTourney = id;
+  const r = await fetch(`/api/tournament/${encodeURIComponent(id)}`); const t = await r.json();
+  const cfg = t.config || {};
+  $("tourneyMeta").textContent = `选手：${(cfg.agents || []).join(" / ")} · 对局 ${t.num_games} · 计分 ${(cfg.scoring || {}).type || ""} · 规则 ${cfg.rule || ""}`;
+  $("lbBody").innerHTML = (t.leaderboard || []).map((e, i) => {
+    const rc = (e.rank_counts || []).join(" / ");
+    const wr = Math.round((e.win_rate || 0) * 100) + "%";
+    return `<tr class="${i === 0 ? "first" : ""}"><td class="pos">${e.rank}</td><td class="name">${avatarHtml(e.name)}</td><td class="pos">${e.points}</td><td>${e.games}</td><td>${e.wins}</td><td>${wr}</td><td>${(e.avg_rank || 0).toFixed(2)}</td><td>${rc}</td><td>${e.avg_score}</td><td>${e.score_delta >= 0 ? "+" : ""}${e.score_delta}</td><td>${e.fallbacks}</td></tr>`;
+  }).join("");
+  $("gamesDetail").innerHTML = (t.games || []).map((g) => {
+    const seats = (g.seats || []).join(" / ");
+    const scores = (g.scores || []).join(" / ");
+    const ranks = (g.ranks || []).join(" / ");
+    return `<tr><td class="name">${esc(g.game_id)}</td><td>${g.seed}</td><td>${g.rotation}</td><td>${esc(seats)}</td><td>${scores}</td><td>${ranks}</td><td>${g.hora_count}</td><td><a class="lb-link" href="index.html?game=${encodeURIComponent(g.game_id)}&frame=0">回放 ▶</a></td></tr>`;
+  }).join("");
+}
+$("tourneySel").addEventListener("change", () => loadTourney($("tourneySel").value));
+$("filterTest").addEventListener("change", loadGames);
+loadProfiles().then(() => { loadStandings(); loadTournaments(); });
+loadGames();
+setInterval(loadGames, 5000);
+setInterval(loadStandings, 5000);
+</script>
+</body>
+</html>

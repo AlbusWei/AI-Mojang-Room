@@ -1,0 +1,69 @@
+# --- Secrets / config (never commit API keys) ---
+.env
+.env.*
+!.env.example
+*.key
+secrets/
+config/local*.json
+config/local*.yaml
+config/local*.toml
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Node / web ---
+node_modules/
+.next/
+out/
+.vite/
+*.tsbuildinfo
+
+# --- Runtime artifacts / logs / recordings ---
+logs/
+*.log
+runs/
+replays/raw/
+recordings/
+*.mp4
+*.webm
+*.mkv
+*.wav
+*.mp3
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# --- AI IDE / agent workspace state (Qoder, Cursor, Lingma, Trae, Windsurf, ...) ---
+.qoder/
+.cursor/
+.lingma/
+.trae/
+.windsurf/
+.continue/
+.aider*
+
+# --- Image-gen intermediates (final cropped avatars live in web/avatars/) ---
+dsh-image-gen/
+
+# --- Internal archive: planning/research/design docs + old samples/screenshots (kept locally, never published) ---
+archive/
+
+# --- Keep placeholder dirs ---
+!.gitkeep
